@@ -1,0 +1,62 @@
+---
+title: "xG PL Table"
+author: "Matthew Dzwil"
+date: "1/16/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, echo=FALSE}
+library("worldfootballR")
+library("rlist")
+```
+
+```{r}
+#match_urls <- get_match_urls(country = "ENG", gender = "M", season_end_year = 2022)
+match_summaries <- epl_results <- understat_league_match_results(league = "EPL", season_start_year = 2021)
+```
+
+```{r}
+teams <- c("Arsenal","Aston Villa", "Brentford", "Brighton", "Burnley", "Chelsea","Crystal Palace","Everton","Leeds","Leicester","Liverpool","Manchester City","Manchester United","Newcastle United", "Norwich","Southampton","Tottenham","Watford","West Ham", "Wolverhampton Wanderers")
+points <- c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
+```
+
+
+```{r}
+
+for(i in 1:nrow(match_summaries)) {
+  if(match_summaries[i, ]$home_xG > (match_summaries[i, ]$away_xG +.4)){
+    for(z in 1:length(teams)){
+      if (teams[z]==match_summaries[i, ]$home_team){
+         points[z]= points[z] + 3
+      }
+    }
+  }
+  else if(match_summaries[i, ]$away_xG > (match_summaries[i, ]$home_xG +.4)){
+    for(z in 1:length(teams)){
+      if (teams[z]==match_summaries[i, ]$away_team){
+         points[z]= points[z] + 3
+      }
+    }
+  }
+  else{
+    for(z in 1:length(teams)){
+      if (teams[z]==match_summaries[i, ]$away_team){
+         points[z]= points[z] + 1
+      }
+      else if(teams[z]==match_summaries[i, ]$home_team){
+        points[z]= points[z] + 1
+      }
+    }
+  }
+}
+  
+```
+
+```{r}
+newTable <- data.frame(teams, points,stringsAsFactors=FALSE)
+```
+
