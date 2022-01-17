@@ -12,6 +12,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r, echo=FALSE}
 library("worldfootballR")
 library("rlist")
+library("gt")
+library("tidyverse")
 ```
 
 ```{r}
@@ -56,7 +58,42 @@ for(i in 1:nrow(match_summaries)) {
   
 ```
 
+
 ```{r}
-newTable <- data.frame(teams, points,stringsAsFactors=FALSE)
+#folder <- "C:/Users/mattd/OneDrive/Documents/GitHub/PL21-22/GW22/logos" 
+#file_list <- list.files(path=folder, pattern="*.png")
+file_list <- c("C:/Users/mattd/OneDrive/Documents/GitHub/PL21-22/GW22/logos/Arsenal.png","C:/Users/mattd/OneDrive/Documents/GitHub/PL21-22/GW22/logos/AstonVilla.png","C:/Users/mattd/OneDrive/Documents/GitHub/PL21-22/GW22/logos/Brentford.png","C:/Users/mattd/OneDrive/Documents/GitHub/PL21-22/GW22/logos/Brighton.png","C:/Users/mattd/OneDrive/Documents/GitHub/PL21-22/GW22/logos/Burnley.png","C:/Users/mattd/OneDrive/Documents/GitHub/PL21-22/GW22/logos/Chelsea.png","C:/Users/mattd/OneDrive/Documents/GitHub/PL21-22/GW22/logos/CrystalPalace.png","C:/Users/mattd/OneDrive/Documents/GitHub/PL21-22/GW22/logos/Everton.png","C:/Users/mattd/OneDrive/Documents/GitHub/PL21-22/GW22/logos/Leeds.png","C:/Users/mattd/OneDrive/Documents/GitHub/PL21-22/GW22/logos/Leicester.png","C:/Users/mattd/OneDrive/Documents/GitHub/PL21-22/GW22/logos/Liverpool.png","C:/Users/mattd/OneDrive/Documents/GitHub/PL21-22/GW22/logos/ManchesterCity.png","C:/Users/mattd/OneDrive/Documents/GitHub/PL21-22/GW22/logos/ManchesterUnited.png","C:/Users/mattd/OneDrive/Documents/GitHub/PL21-22/GW22/logos/Newcastle.png","C:/Users/mattd/OneDrive/Documents/GitHub/PL21-22/GW22/logos/Norwich.png","C:/Users/mattd/OneDrive/Documents/GitHub/PL21-22/GW22/logos/Southampton.png","C:/Users/mattd/OneDrive/Documents/GitHub/PL21-22/GW22/logos/Tottenham.png","C:/Users/mattd/OneDrive/Documents/GitHub/PL21-22/GW22/logos/Watford.png","C:/Users/mattd/OneDrive/Documents/GitHub/PL21-22/GW22/logos/WestHam.png","C:/Users/mattd/OneDrive/Documents/GitHub/PL21-22/GW22/logos/Wolves.png")
+```
+
+```{r}
+points_dif <- c(-3,1,7,-3,-3,1,11,1,0,-8,4,2,-5,0,-3,-2,-2,2,1,-4)
+newTable <- data.frame(file_list,teams, points,points_dif,stringsAsFactors=FALSE)
+PLtable <- newTable[order(-points),]
+```
+
+
+```{r}
+PLtable %>%
+  gt() %>%
+  tab_header(title = "Premier League Table Based on xG",subtitle = "Up until GW22") %>%
+  cols_label(
+    file_list = "",
+    teams = "Team",
+    points = "xPoints",
+    points_dif = "Points - xPoints") %>%
+  tab_footnote(footnote = "If a team has 0.4 xG more than their opponent, this results in a win. Any teams within 0.4 xG of each other results in a draw.",locations = cells_column_labels(
+      columns = points) )%>%
+  tab_source_note(md("**Data:** Understat"))%>%
+  tab_style(style = cell_text(color = "firebrick3"),
+            locations = cells_body(columns = points_dif, rows = points_dif<0))%>%
+  tab_style(style = cell_text(color = "forestgreen"),
+            locations = cells_body(columns = points_dif, rows = points_dif>0))%>%
+  text_transform(
+    locations = cells_body(vars(file_list)),
+    fn = function(file_list){
+      lapply(file_list,local_image)
+    })
+  
+  
 ```
 
