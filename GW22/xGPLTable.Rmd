@@ -14,6 +14,8 @@ library("worldfootballR")
 library("rlist")
 library("gt")
 library("tidyverse")
+library("webshot")
+webshot::install_phantomjs()
 ```
 
 ```{r}
@@ -73,14 +75,14 @@ PLtable <- newTable[order(-points),]
 
 
 ```{r}
-PLtable %>%
+final_table <- PLtable %>%
   gt() %>%
   tab_header(title = "Premier League Table Based on xG",subtitle = "Up until GW22") %>%
   cols_label(
     file_list = "",
     teams = "Team",
     points = "xPoints",
-    points_dif = "Points - xPoints") %>%
+    points_dif = "xPoints - Points") %>%
   tab_footnote(footnote = "If a team has 0.4 xG more than their opponent, this results in a win. Any teams within 0.4 xG of each other results in a draw.",locations = cells_column_labels(
       columns = points) )%>%
   tab_source_note(md("**Data:** Understat"))%>%
@@ -89,11 +91,16 @@ PLtable %>%
   tab_style(style = cell_text(color = "forestgreen"),
             locations = cells_body(columns = points_dif, rows = points_dif>0))%>%
   text_transform(
-    locations = cells_body(vars(file_list)),
+    locations = cells_body(c(file_list)),
     fn = function(file_list){
       lapply(file_list,local_image)
     })
-  
+
+final_table%>%
+  gtsave("GW22table.png", path = "C:/Users/mattd/OneDrive/Documents/GitHub/PL21-22/GW22")
+
+
   
 ```
+
 
