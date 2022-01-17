@@ -68,8 +68,9 @@ file_list <- c("C:/Users/mattd/OneDrive/Documents/GitHub/PL21-22/GW22/logos/Arse
 ```
 
 ```{r}
-points_dif <- c(-3,1,7,-3,-3,1,11,1,0,-8,4,2,-5,0,-3,-2,-2,2,1,-4)
-newTable <- data.frame(file_list,teams, points,points_dif,stringsAsFactors=FALSE)
+current_points<-c(35,23,23,28,11,43,24,19,22,25,45,56,32,12,13,24,33,14,37,31)
+points_dif <- c(3,-1,-7,3,3,-1,-11,-1,0,8,-4,-2,5,0,3,2,2,-2,-1,4)
+newTable <- data.frame(file_list,teams,current_points,points,points_dif,stringsAsFactors=FALSE)
 PLtable <- newTable[order(-points),]
 ```
 
@@ -81,8 +82,9 @@ final_table <- PLtable %>%
   cols_label(
     file_list = "",
     teams = "Team",
+    current_points = "Current Points",
     points = "xPoints",
-    points_dif = "xPoints - Points") %>%
+    points_dif = "Points - xPoints") %>%
   tab_footnote(footnote = "If a team has 0.4 xG more than their opponent, this results in a win. Any teams within 0.4 xG of each other results in a draw.",locations = cells_column_labels(
       columns = points) )%>%
   tab_source_note(md("**Data:** Understat"))%>%
